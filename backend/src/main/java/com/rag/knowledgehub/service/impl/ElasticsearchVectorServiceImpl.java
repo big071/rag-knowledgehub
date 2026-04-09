@@ -108,13 +108,18 @@ public class ElasticsearchVectorServiceImpl implements ElasticsearchVectorServic
     }
 
     @Override
-    public List<SourceSnippet> search(Long knowledgeBaseId, List<Double> questionVector, int topK) {
+    public List<SourceSnippet> search(Long knowledgeBaseId, List<Double> questionVector, String keyword, int topK) {
+        Map<String, Object> innerBool = new HashMap<>();
+        innerBool.put("filter", List.of(Map.of("term", Map.of("knowledgeBaseId", knowledgeBaseId))));
+        if (StringUtils.hasText(keyword)) {
+            innerBool.put("must", List.of(Map.of("match", Map.of("chunkText", keyword))));
+        }
         Map<String, Object> payload = Map.of(
                 "size", topK,
                 "_source", List.of("documentId", "documentName", "chunkIndex", "chunkText"),
                 "query", Map.of(
                         "script_score", Map.of(
-                                "query", Map.of("bool", Map.of("filter", List.of(Map.of("term", Map.of("knowledgeBaseId", knowledgeBaseId))))),
+                                "query", Map.of("bool", innerBool),
                                 "script", Map.of(
                                         "source", "cosineSimilarity(params.query_vector, 'vector') + 1.0",
                                         "params", Map.of("query_vector", questionVector)

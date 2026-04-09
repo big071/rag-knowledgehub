@@ -24,6 +24,10 @@ public class DocumentChunk {
 
     private String content;
 
+    private String contentHash;
+
+    private String vectorJson;
+
     private String esDocId;
 
     @TableField(fill = FieldFill.INSERT)

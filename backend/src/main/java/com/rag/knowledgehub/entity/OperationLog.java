@@ -10,25 +10,30 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sys_user")
-public class User {
+@TableName("operation_log")
+public class OperationLog {
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private String username;
+    private Long userId;
 
-    private String password;
+    private String username;
 
     private String role;
 
-    private String nickname;
+    private String action;
 
-    private Boolean enabled;
+    private String method;
+
+    private String requestUri;
+
+    private String ip;
+
+    private Boolean success;
+
+    private String detail;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
-
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updatedAt;
 }

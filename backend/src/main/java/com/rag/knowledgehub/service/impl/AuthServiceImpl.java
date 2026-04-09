@@ -3,6 +3,7 @@ package com.rag.knowledgehub.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rag.knowledgehub.common.exception.BusinessException;
 import com.rag.knowledgehub.dto.auth.AuthResponse;
+import com.rag.knowledgehub.dto.auth.ChangePasswordRequest;
 import com.rag.knowledgehub.dto.auth.LoginRequest;
 import com.rag.knowledgehub.dto.auth.RegisterRequest;
 import com.rag.knowledgehub.dto.auth.UserProfile;
@@ -10,6 +11,7 @@ import com.rag.knowledgehub.entity.User;
 import com.rag.knowledgehub.enums.ErrorCode;
 import com.rag.knowledgehub.mapper.UserMapper;
 import com.rag.knowledgehub.security.JwtTokenUtil;
+import com.rag.knowledgehub.security.RoleConstants;
 import com.rag.knowledgehub.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,10 +40,11 @@ public class AuthServiceImpl implements AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setNickname(request.getNickname());
-        user.setRole("USER");
+        user.setRole(RoleConstants.USER);
+        user.setEnabled(true);
         userMapper.insert(user);
 
-        String token = jwtTokenUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
+        String token = jwtTokenUtil.generateToken(user.getId(), user.getUsername(), RoleConstants.normalize(user.getRole()));
         return AuthResponse.builder().token(token).user(toProfile(user)).build();
     }
 
@@ -51,7 +54,10 @@ public class AuthServiceImpl implements AuthService {
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "用户名或密码错误");
         }
-        String token = jwtTokenUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
+        if (Boolean.FALSE.equals(user.getEnabled())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "账号已禁用");
+        }
+        String token = jwtTokenUtil.generateToken(user.getId(), user.getUsername(), RoleConstants.normalize(user.getRole()));
         return AuthResponse.builder().token(token).user(toProfile(user)).build();
     }
 
@@ -64,12 +70,27 @@ public class AuthServiceImpl implements AuthService {
         return toProfile(user);
     }
 
+    @Override
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "旧密码错误");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userMapper.updateById(user);
+    }
+
     private UserProfile toProfile(User user) {
         return UserProfile.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
-                .role(user.getRole())
+                .role(RoleConstants.normalize(user.getRole()))
+                .enabled(user.getEnabled())
                 .build();
     }
 }
+

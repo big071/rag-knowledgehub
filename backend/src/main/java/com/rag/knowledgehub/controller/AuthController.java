@@ -2,6 +2,7 @@ package com.rag.knowledgehub.controller;
 
 import com.rag.knowledgehub.common.web.ApiResponse;
 import com.rag.knowledgehub.dto.auth.AuthResponse;
+import com.rag.knowledgehub.dto.auth.ChangePasswordRequest;
 import com.rag.knowledgehub.dto.auth.LoginRequest;
 import com.rag.knowledgehub.dto.auth.RegisterRequest;
 import com.rag.knowledgehub.dto.auth.UserProfile;
@@ -40,5 +41,12 @@ public class AuthController {
     public ApiResponse<UserProfile> me() {
         Long uid = SecurityUtils.getCurrentUserId();
         return ApiResponse.success(authService.currentUser(uid));
+    }
+
+    @Operation(summary = "修改密码")
+    @PostMapping("/change-password")
+    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        authService.changePassword(SecurityUtils.getCurrentUserId(), request);
+        return ApiResponse.success("修改成功", null);
     }
 }

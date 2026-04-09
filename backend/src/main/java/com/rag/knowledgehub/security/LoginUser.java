@@ -17,10 +17,25 @@ public class LoginUser implements UserDetails {
     private String username;
     private String password;
     private String role;
+    private boolean enabled;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        String normalized = RoleConstants.normalize(role);
+        if (RoleConstants.SUPER_ADMIN.equals(normalized)) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_" + RoleConstants.SUPER_ADMIN),
+                    new SimpleGrantedAuthority("ROLE_" + RoleConstants.DOC_ADMIN),
+                    new SimpleGrantedAuthority("ROLE_" + RoleConstants.USER)
+            );
+        }
+        if (RoleConstants.DOC_ADMIN.equals(normalized)) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_" + RoleConstants.DOC_ADMIN),
+                    new SimpleGrantedAuthority("ROLE_" + RoleConstants.USER)
+            );
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + RoleConstants.USER));
     }
 
     @Override
@@ -40,6 +55,6 @@ public class LoginUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

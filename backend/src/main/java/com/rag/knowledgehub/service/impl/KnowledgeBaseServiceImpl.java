@@ -9,6 +9,8 @@ import com.rag.knowledgehub.dto.kb.KnowledgeBaseVO;
 import com.rag.knowledgehub.entity.KnowledgeBase;
 import com.rag.knowledgehub.enums.ErrorCode;
 import com.rag.knowledgehub.mapper.KnowledgeBaseMapper;
+import com.rag.knowledgehub.security.PermissionUtils;
+import com.rag.knowledgehub.security.SecurityUtils;
 import com.rag.knowledgehub.service.KnowledgeBaseService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,8 +40,10 @@ public class KnowledgeBaseServiceImpl implements KnowledgeBaseService {
     @Override
     public PageResponse<KnowledgeBaseVO> page(Long userId, int pageNum, int pageSize, String keyword) {
         LambdaQueryWrapper<KnowledgeBase> wrapper = new LambdaQueryWrapper<KnowledgeBase>()
-                .eq(KnowledgeBase::getUserId, userId)
                 .orderByDesc(KnowledgeBase::getId);
+        if (!PermissionUtils.isDocAdmin(SecurityUtils.getCurrentRole())) {
+            // 普通用户可检索问答，允许读取全局已建知识库
+        }
         if (StringUtils.hasText(keyword)) {
             wrapper.like(KnowledgeBase::getName, keyword);
         }
@@ -59,7 +63,7 @@ public class KnowledgeBaseServiceImpl implements KnowledgeBaseService {
         if (kb == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND, "知识库不存在");
         }
-        if (!kb.getUserId().equals(userId)) {
+        if (!PermissionUtils.isDocAdmin(SecurityUtils.getCurrentRole()) && !kb.getUserId().equals(userId)) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
         knowledgeBaseMapper.deleteById(kbId);

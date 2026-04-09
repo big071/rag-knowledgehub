@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-card shadow="never">
     <template #header>
       <div class="font-semibold">回答来源溯源</div>
@@ -9,6 +9,7 @@
         {{ item.documentName }} · chunk #{{ item.chunkIndex }} · score: {{ (item.score || 0).toFixed(3) }}
       </div>
       <div class="text-sm text-slate-700 leading-6">{{ item.snippet }}</div>
+      <a v-if="item.sourceUrl" :href="item.sourceUrl" target="_blank" class="text-xs text-brand-600 underline mt-1 inline-block">跳转原文</a>
     </div>
   </el-card>
 </template>

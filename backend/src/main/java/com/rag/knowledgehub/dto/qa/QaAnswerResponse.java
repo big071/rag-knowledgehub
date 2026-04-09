@@ -14,6 +14,8 @@ import java.util.List;
 public class QaAnswerResponse {
 
     private String answer;
+    private String summary;
+    private String conversationId;
     private boolean cached;
     private long latencyMs;
     private List<SourceSnippet> sources;
