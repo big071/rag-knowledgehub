@@ -9,6 +9,7 @@ import com.rag.knowledgehub.service.KnowledgeBaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "知识库模块")
@@ -24,6 +25,7 @@ public class KnowledgeBaseController {
 
     @Operation(summary = "创建知识库")
     @PostMapping
+    @PreAuthorize("hasAnyRole('DOC_ADMIN','SUPER_ADMIN')")
     public ApiResponse<KnowledgeBaseVO> create(@Valid @RequestBody KnowledgeBaseCreateRequest request) {
         return ApiResponse.success(knowledgeBaseService.create(SecurityUtils.getCurrentUserId(), request));
     }
@@ -40,6 +42,7 @@ public class KnowledgeBaseController {
 
     @Operation(summary = "删除知识库")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DOC_ADMIN','SUPER_ADMIN')")
     public ApiResponse<Void> delete(@PathVariable Long id) {
         knowledgeBaseService.delete(SecurityUtils.getCurrentUserId(), id);
         return ApiResponse.success("删除成功", null);

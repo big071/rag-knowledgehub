@@ -16,4 +16,5 @@ public class SourceSnippet {
     private Integer chunkIndex;
     private String snippet;
     private Double score;
+    private String sourceUrl;
 }

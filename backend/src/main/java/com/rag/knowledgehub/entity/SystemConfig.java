@@ -10,21 +10,19 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("sys_user")
-public class User {
+@TableName("sys_config")
+public class SystemConfig {
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private String username;
+    private String configKey;
 
-    private String password;
+    private String configValue;
 
-    private String role;
+    private String description;
 
-    private String nickname;
-
-    private Boolean enabled;
+    private Long updatedBy;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;

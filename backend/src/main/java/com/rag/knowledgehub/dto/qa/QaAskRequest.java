@@ -12,4 +12,12 @@ public class QaAskRequest {
 
     @NotBlank
     private String question;
+
+    private String conversationId;
+
+    private String fileType;
+
+    private String startTime;
+
+    private String endTime;
 }

@@ -21,9 +21,10 @@ public class QaController {
         this.qaService = qaService;
     }
 
-    @Operation(summary = "RAG 问答")
+    @Operation(summary = "RAG问答")
     @PostMapping("/ask")
     public ApiResponse<QaAnswerResponse> ask(@Valid @RequestBody QaAskRequest request) {
-        return ApiResponse.success(qaService.ask(SecurityUtils.getCurrentUserId(), request.getKnowledgeBaseId(), request.getQuestion()));
+        return ApiResponse.success(qaService.ask(SecurityUtils.getCurrentUserId(), request.getKnowledgeBaseId(),
+                request.getQuestion(), request.getConversationId(), request.getFileType(), request.getStartTime(), request.getEndTime()));
     }
 }

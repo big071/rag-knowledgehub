@@ -28,7 +28,27 @@ public class Document {
 
     private String storagePath;
 
+    private String sourceHash;
+
     private String parseStatus;
+
+    private String reviewStatus;
+
+    private Long reviewedBy;
+
+    private LocalDateTime reviewedAt;
+
+    private String reviewComment;
+
+    private Integer versionNo;
+
+    private Long parentDocumentId;
+
+    private Boolean latest;
+
+    private Boolean sensitiveHit;
+
+    private String sensitiveTip;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;

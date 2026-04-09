@@ -24,6 +24,10 @@ public class QaRecord {
 
     private String answer;
 
+    private String summary;
+
+    private String conversationId;
+
     private String sourceJson;
 
     @TableField(fill = FieldFill.INSERT)

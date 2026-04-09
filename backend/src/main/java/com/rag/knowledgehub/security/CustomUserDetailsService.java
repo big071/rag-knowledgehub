@@ -23,6 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new LoginUser(user.getId(), user.getUsername(), user.getPassword(), user.getRole());
+        return new LoginUser(user.getId(), user.getUsername(), user.getPassword(), user.getRole(), !Boolean.FALSE.equals(user.getEnabled()));
     }
 }

@@ -11,7 +11,7 @@ public interface ElasticsearchVectorService {
     void indexChunk(String docId, Long knowledgeBaseId, Long documentId, String documentName,
                     Integer chunkIndex, String chunkText, List<Double> vector);
 
-    List<SourceSnippet> search(Long knowledgeBaseId, List<Double> questionVector, int topK);
+    List<SourceSnippet> search(Long knowledgeBaseId, List<Double> questionVector, String keyword, int topK);
 
     void deleteByDocumentId(Long documentId);
 }
